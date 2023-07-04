@@ -1,0 +1,28 @@
+[
+  {
+    "domain": ".udemy.com",
+    "expirationDate": 1719956041.671895,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "__udmy_2_v57r",
+    "path": "/",
+    "sameSite": "unspecified",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "02e1b1814c62400087e20696c53273e7"
+  },
+  {
+    "domain": ".udemy.com",
+    "expirationDate": 1719931536.075526,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "__udmy_1_a12z_c24t",
+    "path": "/",
+    "sameSite": "unspecified",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "VGhlIGFuc3dlciB0byBsaWZlLCB0aGUgdW5pdmVyc2UsIGFuZCBldmVyeXRoaW5nIGlzIDQy"
+  }
+]
