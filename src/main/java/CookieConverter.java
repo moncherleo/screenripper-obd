@@ -15,10 +15,10 @@ public class CookieConverter {
         // Convert JSON to Set<Cookie>
         Set<Cookie> cookies = convertJsonToCookies(filePath);
 
-        // Print the converted cookies
-        for (Cookie cookie : cookies) {
-            System.out.println(cookie.toString());
-        }
+//        // Print the converted cookies
+//        for (Cookie cookie : cookies) {
+//            System.out.println(cookie.toString());
+//        }
     }
 
     public static Set<Cookie> convertJsonToCookies(String filePath) {

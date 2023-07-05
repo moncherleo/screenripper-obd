@@ -38,3 +38,10 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 /src/test/resources/cookies.json
+/src/test/resources/page.txt
+/src/test/resources/website.txt
+
+# Ignore all files in the folder
+/src/test/resources/output/*
+# Exclude the specific file
+!/src/test/resources/output/placeholder.json
