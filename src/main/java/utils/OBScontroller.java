@@ -23,16 +23,23 @@ public class OBScontroller {
         controller.sendRequest(StartRecordRequest.builder().build(), startRecordResponse -> {
             if (startRecordResponse.isSuccessful()) {
                 System.out.println("Recording started successfully");
-                // Sleep for 10 seconds to allow OBS to start recording
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
             } else {
-                System.out.println("Failed to start recording: " + startRecordResponse.getClass());
+                System.out.println("Failed to start recording: " + startRecordResponse.getMessageData());
             }
         });
+
+
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            // Call the method prior to object destruction
+            controller.disconnect();
+        } finally {
+            // Call the finalize() method of the superclass
+            super.finalize();
+        }
     }
 
     public void stopRecording(String fileName) {
@@ -40,25 +47,23 @@ public class OBScontroller {
             if (stopRecordResponse.isSuccessful()) {
                 System.out.println("Recording stopped successfully");
             } else {
-                System.out.println("Failed to stop recording: " + stopRecordResponse.getClass());
+                System.out.println("Failed to stop recording: " + stopRecordResponse.getMessageData());
             }
 
-            String messageData = stopRecordResponse.getMessageData().toString();
-            System.out.println(messageData);
-            String filePath = FilePathExtractor.extractFilePath(messageData);
-            System.out.println(filePath);
-
-            // Sleep for 10 seconds to allow OBS to stop recording
+            // Wait until recording is finished
             try {
-                Thread.sleep(10000);
+                Thread.sleep(3 * 1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+//
+//            String messageData = stopRecordResponse.getMessageData().toString();
+//            System.out.println(messageData);
+//            String filePath = FilePathExtractor.extractFilePath(messageData);
+//            System.out.println(filePath);
+//
+//            System.out.println(FilePathExtractor.renameFile(filePath, fileName));
 
-            System.out.println(FilePathExtractor.renameFile(filePath, fileName));
-
-            // Disconnect from OBS
-            controller.disconnect();
         });
     }
 }

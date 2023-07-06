@@ -1,16 +1,14 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.checkerframework.checker.units.qual.Speed;
-import org.checkerframework.checker.units.qual.Time;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.sikuli.script.FindFailed;
 import utils.*;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.List;
 
 public class ScreenRecorderTest {
     public static void main(String[] args) {
@@ -30,11 +28,12 @@ public class ScreenRecorderTest {
         driver.manage().window().maximize();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        OBScontroller obsController = new OBScontroller();
+        //OBScontroller obsController = new OBScontroller();
 
         String websiteConfigPath = "src/test/resources/website.txt";
         String cookieJSONpath = "src/test/resources/cookies.json";
         String coursePageURLPath = "src/test/resources/page.txt";
+        String videoFolderPath = "//VBOXSVR/_recordings";
 
         // Specify the output directory path
         String outputDirectoryPath = "src/test/resources/output/";
@@ -120,9 +119,10 @@ public class ScreenRecorderTest {
             settingsButton.click();
             WebElement autoplayToggle = driver.findElement(By.xpath("//ul[@data-purpose='settings-menu']/li[3]//button"));
             boolean isAutoplay = Boolean.parseBoolean(autoplayToggle.getAttribute("aria-checked"));
-            if (isAutoplay){
+            if (isAutoplay) {
                 autoplayToggle.click();
             }
+            settingsButton.click();
 
 //            // Find the progress bar element
 //            WebElement progressBar = driver.findElement(By.xpath("//div[@data-purpose='video-progress-bar']"));
@@ -140,8 +140,9 @@ public class ScreenRecorderTest {
 //            driver.findElement(By.xpath("//video")).click();
 //            System.out.println("Click on //video");
 
+            // Wait until real video duration appears
             String videoDurationText = "";
-            while (videoDurationText.equals("") || videoDurationText.equals("0:00")){
+            while (videoDurationText.equals("") || videoDurationText.equals("0:00")) {
                 // Get video duration
                 videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
                 System.out.println("Video duration is " + videoDurationText);
@@ -168,9 +169,9 @@ public class ScreenRecorderTest {
                 currentPlaybackSpeedText = currentPlaybackRateSpeed.getText();
                 System.out.println("Current video speed is " + currentPlaybackSpeedText);
 
-//                // Calculate residual duration by the speed of 2x, adding 5s just in case
-//                int remainingVideoTime = TimeConverter.convertToMilliseconds(videoDurationText) - TimeConverter.convertToMilliseconds(currentVideoTime);
-//                int requiredDelay = remainingVideoTime/2 + 5*1000;
+                // Calculate residual duration by the speed of 2x, adding 5s just in case
+                int remainingVideoTime = TimeConverter.convertToMilliseconds(videoDurationText) - TimeConverter.convertToMilliseconds(currentVideoTimeText);
+                int requiredDelay = (int) (remainingVideoTime / 2) + 5 * 1000;
 
                 // Play the video if it is not playing
                 List<WebElement> playVideoButtons = driver.findElements(By.xpath("//button[@data-purpose='play-button']"));
@@ -180,28 +181,54 @@ public class ScreenRecorderTest {
                     System.out.println("Start playing video");
                 }
 
-                // Polling the video timings until it will play to the end, 1 second refresh rate
-                while (!currentPlaybackSpeedText.equals(videoDurationText)) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    // Find the next video cancel link and click on it
-                    List<WebElement> cancelAutoplay = driver.findElements(By.xpath("//span[text()='Cancel']"));
-                    if (cancelAutoplay.size() > 0){
-                        cancelAutoplay.get(0).click();
-                    }
-
-                    // Get current time
-                    currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
-                    System.out.println("Current video time is " + currentVideoTimeText);
-
-                    // Get duration
-                    videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
-                    System.out.println("Video duration is " + videoDurationText);
+                try {
+                    Thread.sleep(requiredDelay);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+
+//                // Polling the video timings until it will play to the end, 1 second refresh rate
+//                while (!currentPlaybackSpeedText.equals(videoDurationText)) {
+////                    try {
+////                        Thread.sleep(1000);
+////                    } catch (InterruptedException e) {
+////                        throw new RuntimeException(e);
+////                    }
+//
+//                    // Create an instance of Random
+//                    Random random = new Random();
+//
+//                    // Generate a random integer between 2 and 6
+//                    int randomNumber = random.nextInt(5) + 2;
+//
+//                    int xOffset = randomNumber;
+//                    int yOffset = 200;
+//
+//                    // Create an instance of the Robot class
+//                    Robot robot = null;
+//                    try {
+//                        robot = new Robot();
+//                    } catch (AWTException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//
+//                    // Move the cursor to specific coordinates (e.g., x=100, y=200)
+//                    robot.mouseMove(xOffset, yOffset);
+//
+//                    // Find the next video cancel link and click on it
+//                    List<WebElement> cancelAutoplay = driver.findElements(By.xpath("//span[text()='Cancel']"));
+//                    if (cancelAutoplay.size() > 0) {
+//                        cancelAutoplay.get(0).click();
+//                    }
+//
+//                    // Get current time
+//                    currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
+//                    System.out.println("Current video time is " + currentVideoTimeText);
+//
+//                    // Get duration
+//                    videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
+//                    System.out.println("Video duration is " + videoDurationText);
+//                }
 
                 // Go to google.com to reset the video settings
                 driver.get("https://google.com");
@@ -209,20 +236,29 @@ public class ScreenRecorderTest {
                 // Go to the page with video
                 driver.get(lectures.get(j).getCurrentURL());
 
-                // Pause the video if it is playing now
-                pauseVideoButtons = driver.findElements(By.xpath("//button[@data-purpose='pause-button']"));
-                if (pauseVideoButtons.size() > 0) {
-                    System.out.println("Video is playing");
-                    pauseVideoButtons.get(0).click();
-                    System.out.println("Pausing the video");
-                }
+            }
 
-                // Verify that there is less than 5 seconds from the start of the video
-                currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
-                System.out.println("Current video time is " + currentVideoTimeText);
-                if (TimeConverter.convertToMilliseconds(currentVideoTimeText) < 5 * 1000) {
-                    System.out.println("Current video time is less than 5 seconds");
-                }
+            // Wait until real video duration appears
+            videoDurationText = "";
+            while (videoDurationText.equals("") || videoDurationText.equals("0:00")) {
+                // Get video duration
+                videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
+                System.out.println("Video duration is " + videoDurationText);
+            }
+
+            // Pause the video if it is playing now
+            pauseVideoButtons = driver.findElements(By.xpath("//button[@data-purpose='pause-button']"));
+            if (pauseVideoButtons.size() > 0) {
+                System.out.println("Video is playing");
+                pauseVideoButtons.get(0).click();
+                System.out.println("Pausing the video");
+            }
+
+            // Verify that there is less than 5 seconds from the start of the video
+            currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
+            System.out.println("Current video time is " + currentVideoTimeText);
+            if (TimeConverter.convertToMilliseconds(currentVideoTimeText) < 5 * 1000) {
+                System.out.println("Current video time is less than 5 seconds");
             }
 
             if (!currentPlaybackSpeedText.equals("1.5x")) {
@@ -244,17 +280,6 @@ public class ScreenRecorderTest {
             englishCloseCaptionsMenuItem.click();
             closeCaptionsMenuButton.click();
 
-            // Get current time
-            currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
-            System.out.println("Current video time is " + currentVideoTimeText);
-
-            // Get duration
-            videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
-            System.out.println("Video duration is " + videoDurationText);
-
-            // Get current video time in milliseconds
-            int currentVideoTimeINT = TimeConverter.convertToMilliseconds(currentVideoTimeText);
-
             // Play the video if it did not play before
             List<WebElement> playVideoButtons = driver.findElements(By.xpath("//button[@data-purpose='play-button']"));
             if (playVideoButtons.size() > 0) {
@@ -265,7 +290,6 @@ public class ScreenRecorderTest {
 
             int playbackDurationAdjustedBySpeed = 0;
 
-
             // Calculate video time
             // Get current time
             currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
@@ -275,16 +299,31 @@ public class ScreenRecorderTest {
             videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
             System.out.println("Video duration is " + videoDurationText);
 
+            // Calculate real playback duration adjusted by speed multiplier
             int playbackDuration = TimeConverter.convertToMilliseconds(videoDurationText) - TimeConverter.convertToMilliseconds(currentVideoTimeText);
             playbackDurationAdjustedBySpeed = (int) (playbackDuration / 1.5);
 
+            // Minimize browser window to let SikuliX manipulate OBS
+            driver.manage().window().minimize();
+            //Create SikuliX helper
+            VisualTestHelper visualTestHelper = new VisualTestHelper();
+            // Make sure that recording is started
+            try {
+                visualTestHelper.startRecording();
+                visualTestHelper.isRecordingStarted();
+            } catch (FindFailed e) {
+                throw new RuntimeException(e);
+            }
+
+            // Maximize browser window
+            driver.manage().window().minimize();
             // Set video full-screen
             WebElement fullScreenButton = driver.findElement(By.xpath("//div[@data-purpose='video-controls']/div[12]/button"));
             fullScreenButton.click();
             System.out.println("Entered full-screen mode");
 
             // Start video recording
-            obsController.startRecording();
+            // obsController.startRecording();
 
             // Wait till the video will play till the end
             try {
@@ -293,8 +332,25 @@ public class ScreenRecorderTest {
                 throw new RuntimeException(e);
             }
 
+            // Perform action to exit full-screen mode using the JS executor
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("document.exitFullscreen();");
+            System.out.println("Exiting full-screen mode with JavaScript");
+
+            // Minimize browser window to let SikuliX manipulate OBS
+            driver.manage().window().minimize();
+            //Create SikuliX helper
+            visualTestHelper = new VisualTestHelper();
+            // Make sure that recording is started
+            try {
+                visualTestHelper.stopRecording();
+                visualTestHelper.isRecordingStopped();
+            } catch (FindFailed e) {
+                throw new RuntimeException(e);
+            }
+
             // Stop video recording with custom filename
-            obsController.stopRecording(FileHelper.normalizeFileName(lectures.get(j).getLectureName()));
+            // obsController.stopRecording(FileHelper.normalizeFileName(lectures.get(j).getLectureName()));
 
 //            // Perform action to exit full-screen mode using the ESC key
 //            Actions actions = new Actions(driver);
@@ -302,10 +358,7 @@ public class ScreenRecorderTest {
 //            actions.sendKeys(Keys.ESCAPE).perform();
 //            System.out.println("Exiting full-screen mode with ESC key");
 
-            // Perform action to exit full-screen mode using the JS executor
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("document.exitFullscreen();");
-            System.out.println("Exiting full-screen mode with JavaScript");
+
 
             // TODO remove this code
 //            System.out.println("Thread sleep... ");
