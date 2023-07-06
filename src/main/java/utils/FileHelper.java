@@ -26,5 +26,9 @@ public class FileHelper {
 
         return firstLine;
     }
+
+    public static String normalizeFileName (String filename){
+        return filename.replaceAll("[<>:\"/\\\\|?*]", "_");
+    }
 }
 

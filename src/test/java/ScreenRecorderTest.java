@@ -7,10 +7,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import utils.FileHelper;
-import utils.JsonReader;
-import utils.LecturePOJO;
-import utils.TimeConverter;
+import utils.*;
 
 import java.time.Duration;
 import java.util.*;
@@ -33,6 +30,7 @@ public class ScreenRecorderTest {
         driver.manage().window().maximize();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
+        OBScontroller obsController = new OBScontroller();
 
         String websiteConfigPath = "src/test/resources/website.txt";
         String cookieJSONpath = "src/test/resources/cookies.json";
@@ -61,7 +59,7 @@ public class ScreenRecorderTest {
 
         List<LecturePOJO> lectures = JsonReader.readLecturesFromFile("src/test/resources/output/Six Sigma_ Certified Lean Six Sigma White Belt (Accredited).json");
 
-        for (int j = 0; j < 1; j++) {
+        for (int j = 0; j < 2; j++) {
             System.out.println("Lecture Name: " + lectures.get(j).getLectureName());
             System.out.println("Current URL: " + lectures.get(j).getCurrentURL());
 
@@ -117,6 +115,15 @@ public class ScreenRecorderTest {
                 System.out.println("Pausing the video");
             }
 
+            // Disable video autoplay
+            WebElement settingsButton = driver.findElement(By.xpath("//button[@data-purpose='settings-button']"));
+            settingsButton.click();
+            WebElement autoplayToggle = driver.findElement(By.xpath("//ul[@data-purpose='settings-menu']/li[3]//button"));
+            boolean isAutoplay = Boolean.parseBoolean(autoplayToggle.getAttribute("aria-checked"));
+            if (isAutoplay){
+                autoplayToggle.click();
+            }
+
 //            // Find the progress bar element
 //            WebElement progressBar = driver.findElement(By.xpath("//div[@data-purpose='video-progress-bar']"));
 //
@@ -133,13 +140,16 @@ public class ScreenRecorderTest {
 //            driver.findElement(By.xpath("//video")).click();
 //            System.out.println("Click on //video");
 
+            String videoDurationText = "";
+            while (videoDurationText.equals("") || videoDurationText.equals("0:00")){
+                // Get video duration
+                videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
+                System.out.println("Video duration is " + videoDurationText);
+            }
+
             // Get current video time
             String currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
             System.out.println("Current video time is " + currentVideoTimeText);
-
-            // Get video duration
-            String videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
-            System.out.println("Video duration is " + videoDurationText);
 
             // Get current video speed
             WebElement currentPlaybackRateSpeed = driver.findElement(By.xpath("//button[@data-purpose='playback-rate-button']/span"));
@@ -176,6 +186,12 @@ public class ScreenRecorderTest {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
+                    }
+
+                    // Find the next video cancel link and click on it
+                    List<WebElement> cancelAutoplay = driver.findElements(By.xpath("//span[text()='Cancel']"));
+                    if (cancelAutoplay.size() > 0){
+                        cancelAutoplay.get(0).click();
                     }
 
                     // Get current time
@@ -247,21 +263,38 @@ public class ScreenRecorderTest {
                 System.out.println("Start playing video");
             }
 
-            // Start video recording
+            int playbackDurationAdjustedBySpeed = 0;
+
+
+            // Calculate video time
+            // Get current time
+            currentVideoTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
+            System.out.println("Current video time is " + currentVideoTimeText);
+
+            // Get duration
+            videoDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
+            System.out.println("Video duration is " + videoDurationText);
+
+            int playbackDuration = TimeConverter.convertToMilliseconds(videoDurationText) - TimeConverter.convertToMilliseconds(currentVideoTimeText);
+            playbackDurationAdjustedBySpeed = (int) (playbackDuration / 1.5);
 
             // Set video full-screen
             WebElement fullScreenButton = driver.findElement(By.xpath("//div[@data-purpose='video-controls']/div[12]/button"));
             fullScreenButton.click();
             System.out.println("Entered full-screen mode");
 
+            // Start video recording
+            obsController.startRecording();
+
             // Wait till the video will play till the end
             try {
-                Thread.sleep(3000);
+                Thread.sleep(playbackDurationAdjustedBySpeed);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
             // Stop video recording with custom filename
+            obsController.stopRecording(FileHelper.normalizeFileName(lectures.get(j).getLectureName()));
 
 //            // Perform action to exit full-screen mode using the ESC key
 //            Actions actions = new Actions(driver);
@@ -275,12 +308,12 @@ public class ScreenRecorderTest {
             System.out.println("Exiting full-screen mode with JavaScript");
 
             // TODO remove this code
-            System.out.println("Thread sleep... ");
-            try {
-                Thread.sleep(1000 * 1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+//            System.out.println("Thread sleep... ");
+//            try {
+//                Thread.sleep(1000 * 1000);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
 
 
         }

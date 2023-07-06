@@ -175,7 +175,7 @@ public class CourseLinksCollectorTest {
         String jsonData = gson.toJson(lectureDataList);
 
         // Replace unacceptable characters in the Webpage Title with underscores
-        String fileName = pageTitle.replaceAll("[<>:\"/\\\\|?*]", "_") + ".json";
+        String fileName = FileHelper.normalizeFileName(pageTitle) + ".json";
 
         // Write the JSON data to a file in the output directory
         try (FileWriter writer = new FileWriter(outputDirectoryPath + fileName)) {
