@@ -1,6 +1,7 @@
 import io.obswebsocket.community.client.*;
 import io.obswebsocket.community.client.message.request.record.StartRecordRequest;
 import io.obswebsocket.community.client.message.request.record.StopRecordRequest;
+import utils.FilePathExtractor;
 
 public class OBSRecordingExample {
     public static void main(String[] args) {
