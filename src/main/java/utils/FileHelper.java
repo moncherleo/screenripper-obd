@@ -12,6 +12,10 @@ import java.util.Comparator;
 import java.util.List;
 
 public class FileHelper {
+    public static void main(String[] args) {
+
+        System.out.println(FileHelper.normalizeFileName("4. Lean Six Sigma White Belt: AIGPE Six Sigma White Belt Certification Requirements.mkv"));
+    }
     public static String readFirstLineFromFile(String filePath) {
         String firstLine = null;
         BufferedReader reader = null;

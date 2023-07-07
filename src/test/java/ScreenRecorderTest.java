@@ -28,6 +28,8 @@ public class ScreenRecorderTest {
         driver.manage().window().maximize();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
+        VisualTestHelper visualTestHelper = null;
+
         //OBScontroller obsController = new OBScontroller();
 
         String websiteConfigPath = "src/test/resources/website.txt";
@@ -238,6 +240,13 @@ public class ScreenRecorderTest {
 
             }
 
+            // Move mouse to absolute position
+            visualTestHelper = new VisualTestHelper();
+            for (int i = 0; i < 5; i++) {
+                visualTestHelper.moveMouseToLocation(20 + i, 200);
+            }
+
+
             // Wait until real video duration appears
             videoDurationText = "";
             while (videoDurationText.equals("") || videoDurationText.equals("0:00")) {
@@ -276,7 +285,7 @@ public class ScreenRecorderTest {
             // Enable English close captions
             WebElement closeCaptionsMenuButton = driver.findElement(By.xpath("//button[@data-purpose='captions-dropdown-button']"));
             closeCaptionsMenuButton.click();
-            WebElement englishCloseCaptionsMenuItem = driver.findElement(By.xpath("//ul[@data-purpose='captions-dropdown-menu']//div[text()='English']"));
+            WebElement englishCloseCaptionsMenuItem = driver.findElement(By.xpath("//ul[@data-purpose='captions-dropdown-menu']//div[contains(text(),'English')]"));
             englishCloseCaptionsMenuItem.click();
             closeCaptionsMenuButton.click();
 
@@ -306,7 +315,7 @@ public class ScreenRecorderTest {
             // Minimize browser window to let SikuliX manipulate OBS
             driver.manage().window().minimize();
             //Create SikuliX helper
-            VisualTestHelper visualTestHelper = new VisualTestHelper();
+            visualTestHelper = new VisualTestHelper();
             // Make sure that recording is started
             try {
                 visualTestHelper.startRecording();
@@ -316,11 +325,18 @@ public class ScreenRecorderTest {
             }
 
             // Maximize browser window
-            driver.manage().window().minimize();
+            driver.manage().window().maximize();
+
             // Set video full-screen
             WebElement fullScreenButton = driver.findElement(By.xpath("//div[@data-purpose='video-controls']/div[12]/button"));
             fullScreenButton.click();
             System.out.println("Entered full-screen mode");
+
+            try {
+                new VisualTestHelper().closeSeleniumBrowserNotification();
+            } catch (FindFailed e) {
+                throw new RuntimeException(e);
+            }
 
             // Start video recording
             // obsController.startRecording();
@@ -358,7 +374,16 @@ public class ScreenRecorderTest {
 //            actions.sendKeys(Keys.ESCAPE).perform();
 //            System.out.println("Exiting full-screen mode with ESC key");
 
+            // Wait until file save is completed
+            try {
+                Thread.sleep(10*1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
+            FileHelper.renameMostRecentFile(videoFolderPath, FileHelper.normalizeFileName(lectures.get(j).getLectureName()));
+
+            driver.manage().window().maximize();
 
             // TODO remove this code
 //            System.out.println("Thread sleep... ");
@@ -367,8 +392,6 @@ public class ScreenRecorderTest {
 //            } catch (InterruptedException e) {
 //                throw new RuntimeException(e);
 //            }
-
-
         }
 
         // End of the video list

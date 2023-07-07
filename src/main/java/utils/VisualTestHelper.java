@@ -6,8 +6,8 @@ import java.util.Iterator;
 
 
 public class VisualTestHelper {
-    String imagePath = "src/test/resources/images/";
-    Screen screen;
+    private String imagePath = "src/test/resources/images/";
+    private Screen screen;
 
     public static void main(String[] args) {
         VisualTestHelper visualTestHelper = new VisualTestHelper();
@@ -19,6 +19,7 @@ public class VisualTestHelper {
         }
 
     }
+
     public VisualTestHelper() {
         this.screen = new Screen();
         this.screen.setAutoWaitTimeout(240);
@@ -31,14 +32,14 @@ public class VisualTestHelper {
     }
 
     public void stopRecording() throws FindFailed {
-        screen.find("stop_recording.png");
-        screen.click("stop_recording.png");
+        this.screen.find("stop_recording.png");
+        this.screen.click("stop_recording.png");
     }
 
     public boolean isRecordingStarted() {
         Iterator<Match> elements = null;
         try {
-            elements = screen.findAll("start_recording.png");
+            elements = this.screen.findAll("start_recording.png");
         } catch (FindFailed e) {
             throw new RuntimeException(e);
         }
@@ -48,10 +49,26 @@ public class VisualTestHelper {
     public boolean isRecordingStopped() {
         Iterator<Match> elements = null;
         try {
-            elements = screen.findAll("stop_recording.png");
+            elements = this.screen.findAll("stop_recording.png");
         } catch (FindFailed e) {
             throw new RuntimeException(e);
         }
         return elements.hasNext();
+    }
+
+    public void closeSeleniumBrowserNotification() throws FindFailed {
+        Iterator<Match> elements = null;
+        try {
+            elements = this.screen.findAll("selenium_close_button.png");
+        } catch (FindFailed e) {
+            throw new RuntimeException("Failed to close Selenium browser notification. ", e);
+        }
+        if (elements.hasNext()){
+            elements.next().click();
+        }
+    }
+
+    public void moveMouseToLocation(int posX, int posY){
+        Mouse.move(new Location(posX, posX));
     }
 }
