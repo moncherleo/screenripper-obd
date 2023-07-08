@@ -32,10 +32,9 @@ public class ScreenRecorderTest {
 
         //OBScontroller obsController = new OBScontroller();
 
-        String websiteConfigPath = "src/test/resources/website.txt";
         String cookieJSONpath = "src/test/resources/cookies.json";
         String coursePageURLPath = "src/test/resources/page.txt";
-        String videoFolderPath = "//VBOXSVR/_recordings";
+        String videoFolderPath = "//VBOXSVR/_recordings/Selenium_WebDriver_with_Java_-Basics_to_Advanced+Frameworks";
 
         // Specify the output directory path
         String outputDirectoryPath = "src/test/resources/output/";
@@ -47,7 +46,7 @@ public class ScreenRecorderTest {
 
         // Open a website
         System.out.println("Opening a website");
-        String websiteURL = FileHelper.readFirstLineFromFile(websiteConfigPath);
+        String websiteURL = FileHelper.extractBaseURL(FileHelper.readFirstLineFromFile(coursePageURLPath));
         driver.get(websiteURL);
         System.out.println("Opened a website: " + websiteURL);
 
@@ -58,9 +57,9 @@ public class ScreenRecorderTest {
         }
         System.out.println("Cookies are added to the browser.");
 
-        List<LecturePOJO> lectures = JsonReader.readLecturesFromFile("src/test/resources/output/Six Sigma_ Certified Lean Six Sigma White Belt (Accredited).json");
+        List<LecturePOJO> lectures = JsonReader.readLecturesFromFile("src/test/resources/output/Selenium_WebDriver_with_Java_-Basics_to_Advanced+Frameworks.json");
 
-        for (int j = 0; j < 2; j++) {
+        for (int j = 0; j < lectures.size(); j++) {
             System.out.println("Lecture Name: " + lectures.get(j).getLectureName());
             System.out.println("Current URL: " + lectures.get(j).getCurrentURL());
 
