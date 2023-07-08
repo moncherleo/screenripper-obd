@@ -6,6 +6,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.sikuli.script.FindFailed;
 import utils.*;
 
+import java.awt.*;
 import java.time.Duration;
 import java.util.*;
 import java.util.List;
@@ -182,11 +183,41 @@ public class ScreenRecorderTest {
                     System.out.println("Start playing video");
                 }
 
+                long startTime = System.currentTimeMillis();
+                long endTime = startTime + requiredDelay;
+
+                Robot robot = null;
+                // Create an instance of the Robot class
                 try {
-                    Thread.sleep(requiredDelay);
-                } catch (InterruptedException e) {
+                    robot = new Robot();
+                } catch (AWTException e) {
                     throw new RuntimeException(e);
                 }
+
+                // visualTestHelper = new VisualTestHelper();
+                while (System.currentTimeMillis() < endTime) {
+                    // Perform your desired actions here
+                    // This loop will repeat until the current time reaches the target end time
+                    // Move mouse to absolute position
+                    for (int i = 0; i < 5; i++) {
+                        //visualTestHelper.moveMouseToLocation(20 + i, 200);
+                        robot.mouseMove(20 + i, 200);
+                        if (i == 4) {
+                            i = 0;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+
+//                try {
+//                    Thread.sleep(requiredDelay);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
 
 //                // Polling the video timings until it will play to the end, 1 second refresh rate
 //                while (!currentPlaybackSpeedText.equals(videoDurationText)) {
@@ -340,11 +371,52 @@ public class ScreenRecorderTest {
             // Start video recording
             // obsController.startRecording();
 
-            // Wait till the video will play till the end
+//            // Wait till the video will play till the end
+//            try {
+//                Thread.sleep(playbackDurationAdjustedBySpeed);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+
+            long startTime = System.currentTimeMillis();
+            long endTime = startTime + playbackDurationAdjustedBySpeed;
+
+            Robot robot = null;
+            // Create an instance of the Robot class
             try {
-                Thread.sleep(playbackDurationAdjustedBySpeed);
-            } catch (InterruptedException e) {
+                robot = new Robot();
+            } catch (AWTException e) {
                 throw new RuntimeException(e);
+            }
+
+            long now = System.currentTimeMillis();;
+            int xIncrement = 0;
+
+            // visualTestHelper = new VisualTestHelper();
+            while (System.currentTimeMillis() < endTime) {
+                // Perform your desired actions here
+                // This loop will repeat until the current time reaches the target end time
+                // Move mouse to absolute position
+                if (System.currentTimeMillis() > now+5*60*1000){
+                    now = System.currentTimeMillis();
+                    robot.mouseMove(20 + xIncrement, 200);
+                    xIncrement++;
+                    if (xIncrement > 10) {
+                        xIncrement = 0;
+                    }
+                }
+//                for (int i = 0; i < 5; i++) {
+//                    //visualTestHelper.moveMouseToLocation(20 + i, 200);
+//                    robot.mouseMove(20 + i, 200);
+//                    if (i == 4) {
+//                        i = 0;
+//                    }
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
             }
 
             // Perform action to exit full-screen mode using the JS executor
@@ -375,7 +447,7 @@ public class ScreenRecorderTest {
 
             // Wait until file save is completed
             try {
-                Thread.sleep(10*1000);
+                Thread.sleep(10 * 1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
