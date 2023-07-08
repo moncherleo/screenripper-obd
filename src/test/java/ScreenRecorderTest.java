@@ -183,6 +183,12 @@ public class ScreenRecorderTest {
                     System.out.println("Start playing video");
                 }
 
+                try {
+                    Thread.sleep(3*1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
                 long startTime = System.currentTimeMillis();
                 long endTime = startTime + requiredDelay;
 
@@ -377,6 +383,12 @@ public class ScreenRecorderTest {
 //            } catch (InterruptedException e) {
 //                throw new RuntimeException(e);
 //            }
+
+            try {
+                Thread.sleep(3*1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             long startTime = System.currentTimeMillis();
             long endTime = startTime + playbackDurationAdjustedBySpeed;
