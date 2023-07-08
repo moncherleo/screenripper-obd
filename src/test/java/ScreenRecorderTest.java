@@ -135,7 +135,8 @@ public class ScreenRecorderTest {
                 int contentDurationMs = TimeConverter.convertToMilliseconds(contentDurationText);
                 int currentContentTimeMs = TimeConverter.convertToMilliseconds(currentContentTimeText);
                 int remainingVideoTime = contentDurationMs - currentContentTimeMs;
-                int requiredDelayMs = (int) (remainingVideoTime / 2) + timeReserveMs;
+                int remainingVideoTimeAdjusted = remainingVideoTime / 2;
+                int requiredDelayMs = remainingVideoTimeAdjusted + timeReserveMs;
 
                 System.out.println("Adjusted remaining content playback time is: " + String.format("%02d:%02d",
                         TimeUnit.MILLISECONDS.toMinutes(remainingVideoTime),
@@ -173,7 +174,7 @@ public class ScreenRecorderTest {
                     if (pixelIncrement > 20) {
                         pixelIncrement = 0;
                     }
-                    System.out.println("Move the cursor to x: " + xPos + pixelIncrement + ", y: " + yPos);
+                    System.out.println("Move the cursor to x: " + (xPos + pixelIncrement) + ", y: " + yPos);
 
                     // Wait for some time before repeating
                     try {
