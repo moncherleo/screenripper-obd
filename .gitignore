@@ -45,3 +45,4 @@ buildNumber.properties
 /src/test/resources/output/*
 # Exclude the specific file
 !/src/test/resources/output/placeholder.json
+/src/test/resources/properties.txt

@@ -1,0 +1,3 @@
+cookieJSONFilePath=src/test/resources/cookies.json
+videoFolderPath=/path/to/folder
+contentJSONFilePath=/path/to/json/content.json
