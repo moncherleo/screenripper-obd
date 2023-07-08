@@ -343,7 +343,20 @@ public class ScreenRecorderTest {
 
     public static String getCurrentContentTimeText(WebDriver driver) {
         // Get current content time
-        String currentContentTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
+        String currentContentTimeText = "";
+        Robot robot;
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int i = 0; i < 10; i++){
+            robot.mouseMove(200, 200);
+            robot.mouseMove(199, 199);
+            currentContentTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
+        }
+
         System.out.println("Current content playback position time is: " + currentContentTimeText);
         return currentContentTimeText;
     }
