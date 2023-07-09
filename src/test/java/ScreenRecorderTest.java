@@ -110,86 +110,90 @@ public class ScreenRecorderTest {
             // Wait until real video duration appears
             String contentDurationText = ScreenRecorderTest.pollingContentDuration(driver);
 
-            // Get current content time
             String currentContentTimeText = ScreenRecorderTest.getCurrentContentTimeText(driver);
+            while (currentContentTimeText.equals("") || TimeConverter.convertToMilliseconds(currentContentTimeText) > 5 * 1000) {
 
-            // Get current content speed
-            String currentPlaybackSpeedText = ScreenRecorderTest.getCurrentPlaybackRateSpeed(driver);
+                // Get current content time
+                currentContentTimeText = ScreenRecorderTest.getCurrentContentTimeText(driver);
 
-            // If current content time is more than 5 seconds
-            if (TimeConverter.convertToMilliseconds(currentContentTimeText) > 5 * 1000) {
-                // Set the video to 2x
-                System.out.println("***** WARNING *****\nWe are are quite far on content playback timeline.");
-                System.out.println("Speeding content playback speed to 2x to play till the end");
-                WebElement playbackRateMenuButton = driver.findElement(By.xpath("//button[@data-purpose='playback-rate-button']"));
-                System.out.println("Starting content playback");
-                playbackRateMenuButton.click();
-                WebElement playbackRateMenuItem2x = driver.findElement(By.xpath("//ul[@data-purpose='playback-rate-menu']//span[text()='2x']"));
-                System.out.println("Accelerating content playback speed to 2x");
-                playbackRateMenuItem2x.click();
+                // Get current content speed
+                String currentPlaybackSpeedText = ScreenRecorderTest.getCurrentPlaybackRateSpeed(driver);
 
-                currentPlaybackSpeedText = ScreenRecorderTest.getCurrentPlaybackRateSpeed(driver);
+                // If current content time is more than 5 seconds
+                if (TimeConverter.convertToMilliseconds(currentContentTimeText) > 5 * 1000) {
+                    // Set the video to 2x
+                    System.out.println("***** WARNING *****\nWe are are quite far on content playback timeline.");
+                    System.out.println("Speeding content playback speed to 2x to play till the end");
+                    WebElement playbackRateMenuButton = driver.findElement(By.xpath("//button[@data-purpose='playback-rate-button']"));
+                    System.out.println("Starting content playback");
+                    playbackRateMenuButton.click();
+                    WebElement playbackRateMenuItem2x = driver.findElement(By.xpath("//ul[@data-purpose='playback-rate-menu']//span[text()='2x']"));
+                    System.out.println("Accelerating content playback speed to 2x");
+                    playbackRateMenuItem2x.click();
 
-                // Calculate residual duration by the speed of 2x, adding 5s just in case
-                int timeReserveMs = 5 * 1000;
-                int contentDurationMs = TimeConverter.convertToMilliseconds(contentDurationText);
-                int currentContentTimeMs = TimeConverter.convertToMilliseconds(currentContentTimeText);
-                int remainingVideoTime = contentDurationMs - currentContentTimeMs;
-                int remainingVideoTimeAdjusted = remainingVideoTime / 2;
-                int requiredDelayMs = remainingVideoTimeAdjusted + timeReserveMs;
+                    currentPlaybackSpeedText = ScreenRecorderTest.getCurrentPlaybackRateSpeed(driver);
 
-                System.out.println("Adjusted remaining content playback time is: " + String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(remainingVideoTime),
-                        TimeUnit.MILLISECONDS.toSeconds(remainingVideoTime) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(remainingVideoTime))));
+                    // Calculate residual duration by the speed of 2x, adding 5s just in case
+                    int timeReserveMs = 5 * 1000;
+                    int contentDurationMs = TimeConverter.convertToMilliseconds(contentDurationText);
+                    int currentContentTimeMs = TimeConverter.convertToMilliseconds(currentContentTimeText);
+                    int remainingVideoTime = contentDurationMs - currentContentTimeMs;
+                    int remainingVideoTimeAdjusted = remainingVideoTime / 2;
+                    int requiredDelayMs = remainingVideoTimeAdjusted + timeReserveMs;
 
-                // Play the content if it is not playing yet
-                ScreenRecorderTest.playContent(driver);
+                    System.out.println("Adjusted remaining content playback time is: " + String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(remainingVideoTime),
+                            TimeUnit.MILLISECONDS.toSeconds(remainingVideoTime) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(remainingVideoTime))));
 
-                // Checking whether the content is playing or not
-                ScreenRecorderTest.isContentPlayback(driver);
+                    // Play the content if it is not playing yet
+                    ScreenRecorderTest.playContent(driver);
 
-                // Setting the timer values
-                long startTimeMs = System.currentTimeMillis();
-                long endTimeMs = startTimeMs + requiredDelayMs;
+                    // Checking whether the content is playing or not
+                    ScreenRecorderTest.isContentPlayback(driver);
 
-                String formattedStartDateTime = ScreenRecorderTest.millisecondsToDateString(startTimeMs);
-                System.out.println("Playback start date and time is: " + formattedStartDateTime);
+                    // Setting the timer values
+                    long startTimeMs = System.currentTimeMillis();
+                    long endTimeMs = startTimeMs + requiredDelayMs;
 
-                String formattedEndDateTime = ScreenRecorderTest.millisecondsToDateString(startTimeMs);
-                System.out.println("Expected end date and time is: " + formattedEndDateTime);
+                    String formattedStartDateTime = ScreenRecorderTest.millisecondsToDateString(startTimeMs);
+                    System.out.println("Playback start date and time is: " + formattedStartDateTime);
 
-                int pixelIncrement = 0;
-                int xPos = 200;
-                int yPos = 200;
+                    String formattedEndDateTime = ScreenRecorderTest.millisecondsToDateString(startTimeMs);
+                    System.out.println("Expected end date and time is: " + formattedEndDateTime);
 
-                while (System.currentTimeMillis() < endTimeMs) {
-                    String formattedDateTime = ScreenRecorderTest.millisecondsToDateString(startTimeMs);
-                    System.out.println("Current date and time in cycle is: " + formattedDateTime);
+                    int pixelIncrement = 0;
+                    int xPos = 200;
+                    int yPos = 200;
 
-                    // Perform your desired actions here
-                    // Move mouse to absolute position
-                    robot.mouseMove(xPos + pixelIncrement, yPos);
-                    pixelIncrement++;
-                    if (pixelIncrement > 20) {
-                        pixelIncrement = 0;
+                    while (System.currentTimeMillis() < endTimeMs) {
+                        String formattedDateTime = ScreenRecorderTest.millisecondsToDateString(startTimeMs);
+                        System.out.println("Current date and time in cycle is: " + formattedDateTime);
+
+                        // Perform your desired actions here
+                        // Move mouse to absolute position
+                        robot.mouseMove(xPos + pixelIncrement, yPos);
+                        pixelIncrement++;
+                        if (pixelIncrement > 20) {
+                            pixelIncrement = 0;
+                        }
+                        System.out.println("Move the cursor to x: " + (xPos + pixelIncrement) + ", y: " + yPos);
+
+                        // Wait for some time before repeating
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                    System.out.println("Move the cursor to x: " + (xPos + pixelIncrement) + ", y: " + yPos);
 
-                    // Wait for some time before repeating
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                    // Go to google.com to reset the video settings
+                    driver.get("https://google.com");
+
+                    // Go to the page with video
+                    driver.get(lectures.get(j).getCurrentURL());
+
                 }
-
-                // Go to google.com to reset the video settings
-                driver.get("https://google.com");
-
-                // Go to the page with video
-                driver.get(lectures.get(j).getCurrentURL());
-
             }
 
             System.out.println("***** Proceeding with capturing of the content *****");
@@ -220,6 +224,9 @@ public class ScreenRecorderTest {
             if (TimeConverter.convertToMilliseconds(currentContentTimeText) < 5 * 1000) {
                 System.out.println("Current content playback time is less than 5 seconds");
             }
+
+            // Get current content speed
+            String currentPlaybackSpeedText = ScreenRecorderTest.getCurrentPlaybackRateSpeed(driver);
 
             if (!currentPlaybackSpeedText.equals("1.5x")) {
                 // Speed up the video to 1.5x
@@ -352,7 +359,7 @@ public class ScreenRecorderTest {
             throw new RuntimeException(e);
         }
 
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             robot.mouseMove(200, 200);
             robot.mouseMove(199, 199);
             currentContentTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
