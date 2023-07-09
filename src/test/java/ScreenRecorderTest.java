@@ -3,7 +3,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.python.antlr.ast.Str;
 import org.sikuli.script.FindFailed;
 import utils.*;
 
@@ -111,7 +110,7 @@ public class ScreenRecorderTest {
             String contentDurationText = ScreenRecorderTest.pollingContentDuration(driver);
 
             // Get current content time
-            String currentContentTimeText = ScreenRecorderTest.getCurrentContentTimeText(driver);
+            String currentContentTimeText = ScreenRecorderTest.pollingCurrentContentTimeText(driver);
 
             // Get current content speed
             String currentPlaybackSpeedText = ScreenRecorderTest.getCurrentPlaybackRateSpeed(driver);
@@ -216,7 +215,7 @@ public class ScreenRecorderTest {
             ScreenRecorderTest.pauseContentPlayback(driver);
 
             // Verify that there is less than 5 seconds from the start of the video
-            currentContentTimeText = ScreenRecorderTest.getCurrentContentTimeText(driver);
+            currentContentTimeText = ScreenRecorderTest.pollingCurrentContentTimeText(driver);
             if (TimeConverter.convertToMilliseconds(currentContentTimeText) < 5 * 1000) {
                 System.out.println("Current content playback time is less than 5 seconds");
             }
@@ -244,7 +243,7 @@ public class ScreenRecorderTest {
 
             // Calculate video time
             // Get current time
-            currentContentTimeText = ScreenRecorderTest.getCurrentContentTimeText(driver);
+            currentContentTimeText = ScreenRecorderTest.pollingCurrentContentTimeText(driver);
 
             // Get duration
             contentDurationText = driver.findElement(By.xpath("//span[@data-purpose='duration']")).getText();
@@ -342,9 +341,10 @@ public class ScreenRecorderTest {
         return contentDurationText;
     }
 
-    public static String getCurrentContentTimeText(WebDriver driver) {
+    public static String pollingCurrentContentTimeText(WebDriver driver) {
         // Get current content time
         String currentContentTimeText = "";
+        List<WebElement> currentContentTime = driver.findElements(By.xpath("//span[@data-purpose='current-time']"));
         Robot robot;
         try {
             robot = new Robot();
@@ -352,10 +352,16 @@ public class ScreenRecorderTest {
             throw new RuntimeException(e);
         }
 
-        for (int i = 0; i < 10; i++){
+        while (currentContentTime.size() < 1){
             robot.mouseMove(200, 200);
             robot.mouseMove(199, 199);
-            currentContentTimeText = driver.findElement(By.xpath("//span[@data-purpose='current-time']")).getText();
+            currentContentTime = driver.findElements(By.xpath("//span[@data-purpose='current-time']"));
+        }
+        currentContentTimeText = currentContentTime.get(0).getText();
+
+        while (currentContentTimeText.equals("")){
+            currentContentTime = driver.findElements(By.xpath("//span[@data-purpose='current-time']"));
+            currentContentTimeText = currentContentTime.get(0).getText();
         }
 
         System.out.println("Current content playback position time is: " + currentContentTimeText);
