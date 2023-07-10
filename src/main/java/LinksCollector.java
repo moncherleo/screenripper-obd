@@ -8,14 +8,13 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.FileHelper;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class CourseLinksCollectorTest {
+public class LinksCollector {
     public static void main(String[] args) {
         // Set up ChromeDriver using WebDriverManager
         WebDriverManager.chromedriver().setup();
