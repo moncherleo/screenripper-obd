@@ -38,9 +38,6 @@ public class LinksCollector {
         // Read list of courses to process
         List<String> coursesURLs = FileHelper.readLinesFromFile(coursePageURLPath);
 
-        // Create a list to hold the lecture data
-        List<Map<String, String>> lectureDataList = new ArrayList<>();
-
         String currentURL = "";
 
         // Open a website
@@ -57,6 +54,8 @@ public class LinksCollector {
         System.out.println("Cookies are added to the browser.");
 
         for (String courseURL : coursesURLs) {
+            // Create a list to hold the lecture data
+            List<Map<String, String>> lectureDataList = new ArrayList<>();
 
             // Get course start page
             System.out.println("Navigating to the course page");
