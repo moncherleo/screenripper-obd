@@ -296,6 +296,30 @@ public class ScreenRecorder {
             WebElement videoPlayer = driver.findElement(By.xpath("//video"));
             ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
 
+            VisualTestHelper visualTestHelper1 = new VisualTestHelper();
+            if(visualTestHelper1.isFullScreenVisible()){
+                try {
+                    visualTestHelper1.setFullScreen();
+                    System.out.println("Full screen achieved with visual button click");
+                } catch (FindFailed e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                System.out.println("Full screen achieved with JS executor");
+            }
+
+            try {
+                int delay = 3000;
+                playbackDurationAdjustedBySpeed = playbackDurationAdjustedBySpeed - delay;
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (visualTestHelper1.isFullScreenVisible()){
+                System.out.println("Full screen failed!!!");
+            }
+
 //            // Move mouse to absolute position
 //            robot.mouseMove(199, 199);
 //            robot.mouseMove(200, 200);
