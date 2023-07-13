@@ -274,7 +274,9 @@ public class ScreenRecorder {
 
             // Minimize browser window to let SikuliX manipulate OBS
             driver.manage().window().minimize();
+            System.out.println("Browser window is minimized");
 
+            System.out.println("Starting recording...");
             // Make sure that recording is started
             visualTestHelper = new VisualTestHelper();
             try {
@@ -283,17 +285,31 @@ public class ScreenRecorder {
             } catch (FindFailed e) {
                 throw new RuntimeException(e);
             }
+            System.out.println("Recording is started");
 
             // Maximize browser window
             driver.manage().window().maximize();
-
-            // Move mouse to absolute position
-            robot.mouseMove(199, 199);
-            System.out.println("Moved the cursor to x: " + 199 + ", y: " + 199);
+            System.out.println("Browser window maximized");
 
             // Set video full-screen
-            WebElement fullScreenButton = driver.findElement(By.xpath("//div[@data-purpose='video-controls']/div[12]/button"));
-            fullScreenButton.click();
+            System.out.println("Entering full-screen mode...");
+            WebElement videoPlayer = driver.findElement(By.xpath("//video"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
+
+//            // Move mouse to absolute position
+//            robot.mouseMove(199, 199);
+//            robot.mouseMove(200, 200);
+//            List<WebElement> fullScreenButtons = driver.findElements(By.xpath("//div[@data-purpose='video-controls']/div[12]/button"));
+//            while (fullScreenButtons.size() < 1){
+//                // Move mouse to absolute position
+//                robot.mouseMove(199, 199);
+//                robot.mouseMove(200, 200);
+//                fullScreenButtons = driver.findElements(By.xpath("//div[@data-purpose='video-controls']/div[13]/button"));
+//            }
+//            // Move mouse to absolute position
+//            robot.mouseMove(199, 199);
+//            robot.mouseMove(200, 200);
+//            fullScreenButtons.get(0).click();
             System.out.println("Entered full-screen mode");
 
             // Wait till the video will play till the end
