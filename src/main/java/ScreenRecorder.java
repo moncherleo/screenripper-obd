@@ -305,6 +305,14 @@ public class ScreenRecorder {
             WebElement videoPlayer = driver.findElement(By.xpath("//video"));
             ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
 
+            try {
+                int delay = 3000;
+                playbackDurationAdjustedBySpeed = playbackDurationAdjustedBySpeed - delay;
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
             VisualTestHelper visualTestHelper1 = new VisualTestHelper();
             if (visualTestHelper1.isFullScreenVisible()) {
                 try {
