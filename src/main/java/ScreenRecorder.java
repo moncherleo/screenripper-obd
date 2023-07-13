@@ -180,7 +180,16 @@ public class ScreenRecorder {
                 int xPos = 200;
                 int yPos = 200;
 
+                // Trying to rewind to the end of the content playback with visual element navigation
+                new VisualTestHelper().rewindContent();
+
                 while (System.currentTimeMillis() < endTimeMs) {
+                    // Find proceed to next video button in the end of the course and exit loop if found
+                    List<WebElement> continueButtons = driver.findElements(By.xpath("//div[@data-purpose='go-to-next-button']"));
+                    if (continueButtons.size() > 0) {
+                        break;
+                    }
+
                     String formattedDateTime = ScreenRecorder.millisecondsToDateString(startTimeMs);
                     System.out.println("Current date and time in cycle is: " + formattedDateTime);
 
@@ -297,7 +306,7 @@ public class ScreenRecorder {
             ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
 
             VisualTestHelper visualTestHelper1 = new VisualTestHelper();
-            if(visualTestHelper1.isFullScreenVisible()){
+            if (visualTestHelper1.isFullScreenVisible()) {
                 try {
                     visualTestHelper1.setFullScreen();
                     System.out.println("Full screen achieved with visual button click");
@@ -316,7 +325,7 @@ public class ScreenRecorder {
                 throw new RuntimeException(e);
             }
 
-            if (visualTestHelper1.isFullScreenVisible()){
+            if (visualTestHelper1.isFullScreenVisible()) {
                 System.out.println("Full screen failed!!!");
             }
 

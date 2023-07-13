@@ -50,7 +50,6 @@ public class VisualTestHelper {
         this.screen.click("fullscreen.png");
     }
 
-
     public void stopRecording() throws FindFailed {
         this.screen.find("stop_recording.png");
         this.screen.click("stop_recording.png");
@@ -63,7 +62,12 @@ public class VisualTestHelper {
         } catch (FindFailed e) {
             throw new RuntimeException(e);
         }
-        return elements.hasNext();
+
+        if (elements == null) {
+            return false;
+        } else {
+            return elements.hasNext();
+        }
     }
 
     public boolean isRecordingStopped() {
@@ -73,7 +77,12 @@ public class VisualTestHelper {
         } catch (FindFailed e) {
             throw new RuntimeException(e);
         }
-        return elements.hasNext();
+
+        if (elements == null) {
+            return false;
+        } else {
+            return elements.hasNext();
+        }
     }
 
     public boolean isFullScreenVisible() {
@@ -92,7 +101,47 @@ public class VisualTestHelper {
         } catch (FindFailed e) {
             throw new RuntimeException(e);
         }
-        return elements.hasNext();
+
+        if (elements == null) {
+            return false;
+        } else {
+            return elements.hasNext();
+        }
+    }
+
+    public void rewindContent() {
+        Robot robot = null;
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
+        }
+
+        robot.mouseMove(199, 199);
+        robot.mouseMove(200, 199);
+
+        System.out.println("Trying to find rewind element...");
+        Iterator<Match> elements = null;
+        try {
+            elements = this.screen.findAll("rewind1.png");
+            if (elements == null || !elements.hasNext()) {
+                robot.mouseMove(199, 199);
+                robot.mouseMove(200, 199);
+                elements = this.screen.findAll("rewind2.png");
+            }
+        } catch (FindFailed e) {
+            throw new RuntimeException(e);
+        }
+
+        if (elements != null && elements.hasNext()) {
+            robot.mouseMove(199, 199);
+            robot.mouseMove(200, 199);
+            elements.next().click();
+            System.out.println("Rewinding to the end");
+        } else {
+            System.out.println("Rewind failed, element not found");
+        }
+
     }
 
     public void closeSeleniumBrowserNotification() throws FindFailed {
@@ -102,12 +151,14 @@ public class VisualTestHelper {
         } catch (FindFailed e) {
             throw new RuntimeException("Failed to close Selenium browser notification. ", e);
         }
-        if (elements.hasNext()){
+        if (elements != null && elements.hasNext()) {
             elements.next().click();
         }
     }
 
-    public void moveMouseToLocation(int posX, int posY){
+    public void moveMouseToLocation(int posX, int posY) {
         Mouse.move(new Location(posX, posX));
     }
+
+
 }
