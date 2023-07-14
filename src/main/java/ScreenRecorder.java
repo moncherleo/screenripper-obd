@@ -324,7 +324,7 @@ public class ScreenRecorder {
             ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
 
             try {
-                int delay = 3000;
+                int delay = 3*1000;
                 playbackDurationAdjustedBySpeed = playbackDurationAdjustedBySpeed - delay;
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -343,8 +343,13 @@ public class ScreenRecorder {
                 System.out.println("Full screen achieved with JS executor");
             }
 
+            if((boolean) ((JavascriptExecutor) driver).executeScript("return !!document.fullscreenElement")){
+                System.out.println("Content is not in fullscreen mode. Second attempt with JS");
+                ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
+            }
+
             try {
-                int delay = 3000;
+                int delay = 3*1000;
                 playbackDurationAdjustedBySpeed = playbackDurationAdjustedBySpeed - delay;
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -352,7 +357,13 @@ public class ScreenRecorder {
             }
 
             if (visualTestHelper1.isFullScreenVisible()) {
-                System.out.println("Full screen failed!!!");
+                System.out.println("Full screen first attempt with visual button is failed!");
+                try {
+                    System.out.println("Second attempt of achieving the full screen with visual button click");
+                    visualTestHelper1.setFullScreen();
+                } catch (FindFailed e) {
+                    throw new RuntimeException(e);
+                }
             }
 
 //            // Move mouse to absolute position
