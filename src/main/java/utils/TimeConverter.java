@@ -2,8 +2,15 @@ package utils;
 
 public class TimeConverter {
     public static int convertToMilliseconds(String timeString) {
+        if (timeString == null || timeString.isEmpty()) {
+            throw new IllegalArgumentException("Invalid time format: " + timeString);
+        }
+
         // Split the string into parts based on the delimiter ":"
         String[] parts = timeString.split(":");
+        if (parts.length != 2 && parts.length != 3) {
+            throw new IllegalArgumentException("Invalid time format: " + timeString);
+        }
 
         // Initialize the variables
         int hours = 0;
@@ -15,14 +22,11 @@ public class TimeConverter {
             // Format: "minutes:seconds"
             minutes = Integer.parseInt(parts[0]);
             seconds = Integer.parseInt(parts[1]);
-        } else if (parts.length == 3) {
+        } else {
             // Format: "hours:minutes:seconds"
             hours = Integer.parseInt(parts[0]);
             minutes = Integer.parseInt(parts[1]);
             seconds = Integer.parseInt(parts[2]);
-        } else {
-            // Invalid format, handle the error accordingly
-            throw new IllegalArgumentException("Invalid time format: " + timeString);
         }
 
         // Convert hours, minutes, and seconds to milliseconds
