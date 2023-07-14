@@ -87,7 +87,7 @@ public class ScreenRecorder {
 //            }
 //            System.out.println(videoElements.size() + " content elements found");
             long startTime = System.currentTimeMillis();
-            long durationInMillis = 60*1000; // 60 seconds
+            long durationInMillis = 60 * 1000; // 60 seconds
 
             while ((System.currentTimeMillis() - startTime) < durationInMillis) {
                 List<WebElement> videoElements = driver.findElements(By.xpath("//video"));
@@ -278,11 +278,13 @@ public class ScreenRecorder {
             }
 
             // Enable English close captions
-            WebElement closeCaptionsMenuButton = driver.findElement(By.xpath("//button[@data-purpose='captions-dropdown-button']"));
-            closeCaptionsMenuButton.click();
-            WebElement englishCloseCaptionsMenuItem = driver.findElement(By.xpath("//ul[@data-purpose='captions-dropdown-menu']//div[contains(text(),'English')]"));
-            englishCloseCaptionsMenuItem.click();
-            closeCaptionsMenuButton.click();
+            List<WebElement> closeCaptionsMenuButtons = driver.findElements(By.xpath("//button[@data-purpose='captions-dropdown-button']"));
+            if (closeCaptionsMenuButtons.size() > 0) {
+                closeCaptionsMenuButtons.get(0).click();
+                WebElement englishCloseCaptionsMenuItem = driver.findElement(By.xpath("//ul[@data-purpose='captions-dropdown-menu']//div[contains(text(),'English')]"));
+                englishCloseCaptionsMenuItem.click();
+                closeCaptionsMenuButtons.get(0).click();
+            }
 
             // Play the video if it did not play before
             ScreenRecorder.playContent(driver);
@@ -324,7 +326,7 @@ public class ScreenRecorder {
             ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
 
             try {
-                int delay = 3*1000;
+                int delay = 3 * 1000;
                 playbackDurationAdjustedBySpeed = playbackDurationAdjustedBySpeed - delay;
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -343,13 +345,13 @@ public class ScreenRecorder {
                 System.out.println("Full screen achieved with JS executor");
             }
 
-            if((boolean) ((JavascriptExecutor) driver).executeScript("return !!document.fullscreenElement")){
+            if ((boolean) ((JavascriptExecutor) driver).executeScript("return !!document.fullscreenElement")) {
                 System.out.println("Content is not in fullscreen mode. Second attempt with JS");
                 ((JavascriptExecutor) driver).executeScript("arguments[0].requestFullscreen();", videoPlayer);
             }
 
             try {
-                int delay = 3*1000;
+                int delay = 3 * 1000;
                 playbackDurationAdjustedBySpeed = playbackDurationAdjustedBySpeed - delay;
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
