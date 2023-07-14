@@ -43,10 +43,6 @@ public class VisualTestHelper {
         robot.mouseMove(200, 199);
 
         this.screen.find("fullscreen.png");
-
-        robot.mouseMove(199, 199);
-        robot.mouseMove(200, 199);
-
         this.screen.click("fullscreen.png");
     }
 
