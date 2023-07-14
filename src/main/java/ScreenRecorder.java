@@ -81,11 +81,29 @@ public class ScreenRecorder {
 
             // Polling the page to get at least one content element on the page
             System.out.println("Polling the page to get at least one content element on the page");
-            List<WebElement> videoElements = null;
-            while (videoElements == null || videoElements.size() < 1) {
-                videoElements = driver.findElements(By.xpath("//video"));
+//            List<WebElement> videoElements = null;
+//            while (videoElements == null || videoElements.size() < 1) {
+//                videoElements = driver.findElements(By.xpath("//video"));
+//            }
+//            System.out.println(videoElements.size() + " content elements found");
+            long startTime = System.currentTimeMillis();
+            long durationInMillis = 60*1000; // 60 seconds
+
+            while ((System.currentTimeMillis() - startTime) < durationInMillis) {
+                List<WebElement> videoElements = driver.findElements(By.xpath("//video"));
+
+                if (videoElements.size() >= 1) {
+                    System.out.println(videoElements.size() + " content elements found");
+                    break; // Exit the while loop if at least one content element is found
+                }
+
+                // Check if the elapsed time exceeds 60 seconds
+                if ((System.currentTimeMillis() - startTime) >= durationInMillis) {
+                    System.out.println("No content elements found. Refreshing the page.");
+                    driver.navigate().refresh();
+                    startTime = System.currentTimeMillis(); // Reset the start time after refreshing the page
+                }
             }
-            System.out.println(videoElements.size() + " content elements found");
 
             // Pause the content if it is playing now
             ScreenRecorder.pauseContentPlayback(driver);
