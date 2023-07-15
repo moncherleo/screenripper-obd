@@ -57,6 +57,7 @@ public class ScreenRecorder {
         System.out.println("Website is opened");
 
         // Close Selenium top bar
+        System.out.println("Closing Selenium top bar...");
         try {
             new VisualTestHelper().closeSeleniumBrowserNotification();
         } catch (FindFailed e) {
@@ -94,7 +95,12 @@ public class ScreenRecorder {
 
                 if (videoElements.size() >= 1) {
                     System.out.println(videoElements.size() + " content elements found");
-                    break; // Exit the while loop if at least one content element is found
+                    System.out.println("Looking for the content playback button");
+                    if (ScreenRecorder.isPlaybackControlsExists(driver)) {
+                        // Exit the while loop if at least one content element
+                        // and at least one playback button are found
+                        break;
+                    }
                 }
 
                 // Check if the elapsed time exceeds 60 seconds
@@ -124,11 +130,11 @@ public class ScreenRecorder {
             settingsButton.click();
             System.out.println("Content autoplay is disabled");
 
-            // Wait until real video duration appears
-            String contentDurationText = ScreenRecorder.pollingContentDuration(driver);
-
             // Play content if it is paused now
             ScreenRecorder.playContent(driver);
+
+            // Wait until real video duration appears
+            String contentDurationText = ScreenRecorder.pollingContentDuration(driver);
 
             // Get current content speed
             String currentPlaybackSpeedText = ScreenRecorder.getCurrentPlaybackRateSpeed(driver);
@@ -142,11 +148,11 @@ public class ScreenRecorder {
                 System.out.println("***** WARNING *****\nWe are are quite far on content playback timeline.");
                 System.out.println("Speeding content playback speed to 2x to play till the end");
 
-                // Wait until real video duration appears
-                contentDurationText = ScreenRecorder.pollingContentDuration(driver);
-
                 // Play content if it is paused now
                 ScreenRecorder.playContent(driver);
+
+                // Wait until real video duration appears
+                contentDurationText = ScreenRecorder.pollingContentDuration(driver);
 
                 // Get current content speed
                 currentPlaybackSpeedText = ScreenRecorder.getCurrentPlaybackRateSpeed(driver);
@@ -505,6 +511,25 @@ public class ScreenRecorder {
             System.out.println("Content playback is paused");
             playContentButtons.get(0).click();
             System.out.println("Attempting to start content playback");
+        }
+    }
+
+    public static boolean isPlaybackControlsExists(WebDriver driver) {
+        Robot robot = null;
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
+        }
+        robot.mouseMove(200, 200);
+        robot.mouseMove(199, 199);
+
+        List<WebElement> playContentButtons = driver.findElements(By.xpath("//button[@data-purpose='play-button']"));
+        List<WebElement> pauseContentPlaybackButtons = driver.findElements(By.xpath("//button[@data-purpose='pause-button']"));
+        if (playContentButtons.size() > 0 || pauseContentPlaybackButtons.size() > 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 
