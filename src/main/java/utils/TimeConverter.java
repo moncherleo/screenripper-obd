@@ -9,7 +9,7 @@ public class TimeConverter {
         // Split the string into parts based on the delimiter ":"
         String[] parts = timeString.split(":");
         if (parts.length != 2 && parts.length != 3) {
-            throw new IllegalArgumentException("Invalid time format: " + timeString);
+            throw new IllegalArgumentException("Invalid time format after split: " + timeString);
         }
 
         // Initialize the variables
