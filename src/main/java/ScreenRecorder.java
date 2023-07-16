@@ -130,6 +130,7 @@ public class ScreenRecorder {
             settingsButton.click();
             System.out.println("Content autoplay is disabled");
 
+
             // Play content if it is paused now
             ScreenRecorder.playContent(driver);
 
@@ -150,6 +151,28 @@ public class ScreenRecorder {
 
                 // Play content if it is paused now
                 ScreenRecorder.playContent(driver);
+
+                startTime = System.currentTimeMillis();
+                while ((System.currentTimeMillis() - startTime) < durationInMillis) {
+                    List<WebElement> videoElements = driver.findElements(By.xpath("//video"));
+
+                    if (videoElements.size() >= 1) {
+                        System.out.println(videoElements.size() + " content elements found");
+                        System.out.println("Looking for the content playback button");
+                        if (ScreenRecorder.isPlaybackControlsExists(driver)) {
+                            // Exit the while loop if at least one content element
+                            // and at least one playback button are found
+                            break;
+                        }
+                    }
+
+                    // Check if the elapsed time exceeds 60 seconds
+                    if ((System.currentTimeMillis() - startTime) >= durationInMillis) {
+                        System.out.println("No content elements found. Refreshing the page.");
+                        driver.navigate().refresh();
+                        startTime = System.currentTimeMillis(); // Reset the start time after refreshing the page
+                    }
+                }
 
                 // Wait until real video duration appears
                 contentDurationText = ScreenRecorder.pollingContentDuration(driver);
@@ -439,6 +462,11 @@ public class ScreenRecorder {
             robot = new Robot();
         } catch (AWTException e) {
             throw new RuntimeException(e);
+        }
+
+        List<WebElement> askMeAtTheEndOfTheCourseButtons = driver.findElements(By.xpath("//button[@data-purpose='dont-ask-button']"));
+        if (askMeAtTheEndOfTheCourseButtons.size() > 0){
+            askMeAtTheEndOfTheCourseButtons.get(0).click();
         }
 
         String contentDurationText = "";
