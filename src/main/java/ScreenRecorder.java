@@ -143,6 +143,32 @@ public class ScreenRecorder {
             // Get current content time
             String currentContentTimeText = ScreenRecorder.getCurrentContentTimeText(driver);
 
+
+            // Time fix workaround
+            int contentDurationMs;
+            int currentContentTimeMs;
+            // Try convert received values, and refresh page with repeating the cycle if failed
+            try {
+                contentDurationMs = TimeConverter.convertToMilliseconds(contentDurationText);
+                currentContentTimeMs = TimeConverter.convertToMilliseconds(currentContentTimeText);
+            } catch (IllegalArgumentException e){
+                System.out.println("Time conversion for content duration or content current time is failed!");
+                System.out.println("Repeating the 2x rewind cycle...");
+                driver.navigate().refresh();
+
+                // Play content if it is paused now
+                ScreenRecorder.playContent(driver);
+
+                // Wait until real video duration appears
+                contentDurationText = ScreenRecorder.pollingContentDuration(driver);
+
+                // Get current content speed
+                currentPlaybackSpeedText = ScreenRecorder.getCurrentPlaybackRateSpeed(driver);
+
+                // Get current content time
+                currentContentTimeText = ScreenRecorder.getCurrentContentTimeText(driver);
+            }
+
             // If current content time is more than 10 seconds
             while (TimeConverter.convertToMilliseconds(currentContentTimeText) > 10 * 1000) {
                 // Set the video to 2x
@@ -196,8 +222,6 @@ public class ScreenRecorder {
 
                 // Calculate residual duration by the speed of 2x, adding 5s just in case
                 int timeReserveMs = 10 * 1000;
-                int contentDurationMs;
-                int currentContentTimeMs;
 
                 // Try convert received values, and refresh page with repeating the cycle if failed
                 try {
